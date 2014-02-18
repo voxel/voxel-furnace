@@ -2,7 +2,6 @@
 ModalDialog = require 'voxel-modal-dialog'
 Inventory = require 'inventory'
 InventoryWindow = require 'inventory-window'
-ItemPile = require 'itempile'
 
 module.exports = (game, opts) ->
   return new Furnace(game, opts)
@@ -36,7 +35,7 @@ class Furnace
       }
 
     if @opts.registerRecipe
-      @recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], new ItemPile('furnace', 1))
+      @recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace'])
 
   disable: () ->
     # TODO
