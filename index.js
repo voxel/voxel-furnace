@@ -132,6 +132,11 @@
       burnCont = this.burnIW.createContainer();
       fuelCont = this.fuelIW.createContainer();
       resultCont = this.resultIW.createContainer();
+      burnCont.style.display = 'flex';
+      burnCont.style.flex = '1';
+      fuelCont.style.display = 'flex';
+      fuelCont.style.flex = '1';
+      resultCont.style.display = 'flex';
       crDiv.appendChild(burnCont);
       crDiv.appendChild(fuelCont);
       crDiv.appendChild(resultCont);

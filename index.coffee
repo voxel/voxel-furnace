@@ -71,6 +71,25 @@ class FurnaceDialog extends ModalDialog
     fuelCont = @fuelIW.createContainer()
     resultCont = @resultIW.createContainer()
 
+    # align as follows:
+    # +---------------------------------+
+    # | [burn]      [fuel]      [result]|
+    # +---------------------------------+
+    #
+    # TODO: how about this instead:
+    # +---------------------------------+
+    # |     [burn]                      |
+    # |             --->  [result]      |
+    # |     [fuel]                      |
+    # +---------------------------------+
+    burnCont.style.display = 'flex'
+    burnCont.style.flex = '1'
+
+    fuelCont.style.display = 'flex'
+    fuelCont.style.flex = '1'
+
+    resultCont.style.display = 'flex'
+
     crDiv.appendChild(burnCont)
     crDiv.appendChild(fuelCont)
     crDiv.appendChild(resultCont)
