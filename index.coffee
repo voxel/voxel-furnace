@@ -110,21 +110,22 @@ class FurnaceDialog extends ModalDialog
   # TODO: refactor again from voxel-inventory-dialog's crafting
 
   updateSmelting: () ->
-    return if not @isFuel(@fuelInventory.get(0))
-    return if not @isBurnable(@burnInventory.get(0))
-    return if @resultInventory.get(0) && @resultInventory.get(0).item != 'coal' # empty or stackable result TODO: not if full
-
     return if @isSmelting # prevent recursion
     @isSmelting = true
 
-    console.log "smelting: #{@fuelInventory} + #{@burnInventory} = #{@resultInventory}"
+    while true
+      break if not @isFuel(@fuelInventory.get(0))
+      break if not @isBurnable(@burnInventory.get(0))
+      break if @resultInventory.get(0) && (@resultInventory.get(0).item != 'coal' || @resultInventory.get(0).count == 64) # not empty or stackable or no space
 
-    fuel = @fuelInventory.takeAt(0, 1)
-    burn = @burnInventory.takeAt(0, 1) # TODO: custom burn amounts TODO: finite burn times
+      console.log "smelting: #{@fuelInventory} + #{@burnInventory} = #{@resultInventory}"
 
-    @resultInventory.give new ItemPile('coal', 1) # TODO: registry
-    
-    console.log "smelted: #{@fuelInventory} + #{@burnInventory} = #{@resultInventory}"
+      fuel = @fuelInventory.takeAt(0, 1)
+      burn = @burnInventory.takeAt(0, 1) # TODO: custom burn amounts TODO: finite burn times
+
+      @resultInventory.give new ItemPile('coal', 1) # TODO: registry
+      
+      console.log "smelted: #{@fuelInventory} + #{@burnInventory} = #{@resultInventory}"
 
     @isSmelting = false
 

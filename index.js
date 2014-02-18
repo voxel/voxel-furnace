@@ -171,24 +171,26 @@
 
     FurnaceDialog.prototype.updateSmelting = function() {
       var burn, fuel;
-      if (!this.isFuel(this.fuelInventory.get(0))) {
-        return;
-      }
-      if (!this.isBurnable(this.burnInventory.get(0))) {
-        return;
-      }
-      if (this.resultInventory.get(0) && this.resultInventory.get(0).item !== 'coal') {
-        return;
-      }
       if (this.isSmelting) {
         return;
       }
       this.isSmelting = true;
-      console.log("smelting: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
-      fuel = this.fuelInventory.takeAt(0, 1);
-      burn = this.burnInventory.takeAt(0, 1);
-      this.resultInventory.give(new ItemPile('coal', 1));
-      console.log("smelted: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
+      while (true) {
+        if (!this.isFuel(this.fuelInventory.get(0))) {
+          break;
+        }
+        if (!this.isBurnable(this.burnInventory.get(0))) {
+          break;
+        }
+        if (this.resultInventory.get(0) && (this.resultInventory.get(0).item !== 'coal' || this.resultInventory.get(0).count === 64)) {
+          break;
+        }
+        console.log("smelting: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
+        fuel = this.fuelInventory.takeAt(0, 1);
+        burn = this.burnInventory.takeAt(0, 1);
+        this.resultInventory.give(new ItemPile('coal', 1));
+        console.log("smelted: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
+      }
       return this.isSmelting = false;
     };
 
