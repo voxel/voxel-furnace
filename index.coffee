@@ -48,28 +48,35 @@ class FurnaceDialog extends ModalDialog
     @playerIW = new InventoryWindow {width: 10, registry:@registry, inventory:@playerInventory}
 
     # TODO: clear these inventories on close, or store in per-block metadata
-    @craftInventory = new Inventory(3, 3)
-    @craftInventory.on 'changed', () => @updateCraftingRecipe()
-    @craftIW = new InventoryWindow {width:3, registry:@registry, inventory:@craftInventory, linkedInventory:@playerInventory}
+    
+    @burnInventory = new Inventory(1)
+    #@burnInventory.on 'changed', () => @updateCraftingRecipe()
+    @burnIW = new InventoryWindow {width:1, registry:@registry, inventory:@burnInventory, linkedInventory:@playerInventory}
+
+    @fuelInventory = new Inventory(1)
+    #@fuelInventory.on 'changed', 
+    @fuelIW = new InventoryWindow {width:1, registry:@registry, inventory:@fuelInventory, linkedInventory:@playerInventory}
 
     @resultInventory = new Inventory(1)
     @resultIW = new InventoryWindow {inventory:@resultInventory, registry:@registry, allowDrop:false, linkedInventory:@playerInventory}
-    @resultIW.on 'pickup', () => @tookCraftingOutput()
+    @resultIW.on 'pickup', () => @tookSmeltOutput()
 
-    # crafting + result div, upper
+    # burn + fuel + result div, upper
     crDiv = document.createElement('div')
     crDiv.style.marginLeft = '30%'
     #crDiv.style.marginLeft = 'auto' # TODO: fix centering
     #crDiv.style.marginRight = 'auto'
     crDiv.style.marginBottom = '10px'
-   
-    craftCont = @craftIW.createContainer()
+  
+    burnCont = @burnIW.createContainer()
+    fuelCont = @fuelIW.createContainer()
 
     resultCont = @resultIW.createContainer()
     resultCont.style.marginLeft = '30px'
     resultCont.style.marginTop = '15%'
 
-    crDiv.appendChild(craftCont)
+    crDiv.appendChild(burnCont)
+    crDiv.appendChild(fuelCont)
     crDiv.appendChild(resultCont)
 
     contents = []
@@ -82,29 +89,22 @@ class FurnaceDialog extends ModalDialog
 
   # TODO: refactor again from voxel-inventory-dialog's crafting
 
-  # changed crafting grid, so update recipe output
-  updateCraftingRecipe: () ->
-    recipe = @recipes.find(@craftInventory)
-    console.log 'found recipe',recipe
-    @resultInventory.set 0, recipe?.computeOutput(@craftInventory)
+  updateSmeltingRecipe: () ->
+    #recipe = @recipes.find(@craftInventory)
+    #console.log 'found recipe',recipe
+    #@resultInventory.set 0, recipe?.computeOutput(@craftInventory)
+    # TODO
 
-  # picked up crafting recipe output, so consume crafting grid ingredients
-  tookCraftingOutput: () ->
-    recipe = @recipes.find(@craftInventory)
-    return if not recipe?
+  # picked up smelting recipe output
+  tookSmeltOutput: () ->
+    #recipe = @recipes.find(@craftInventory)
+    #return if not recipe?
 
-    recipe.craft(@craftInventory)
-    @craftInventory.changed()
+    #recipe.craft(@craftInventory)
+    #@craftInventory.changed()
+    # TODO?
 
   close: () ->
-    # exiting furnace returns in-progress crafting ingredients to player
-    # TODO: inventory transfer() method
-    for i in [0...@craftInventory.size()]
-      if @craftInventory.get(i)
-        excess = @playerInventory.give @craftInventory.get(i)
-        #if excess # too bad, player loses if can't fit
-
-      @craftInventory.set i, undefined
 
     super()
 

@@ -89,7 +89,7 @@
     __extends(FurnaceDialog, _super);
 
     function FurnaceDialog(game, playerInventory, registry, recipes) {
-      var contents, crDiv, craftCont, resultCont;
+      var burnCont, contents, crDiv, fuelCont, resultCont;
       this.game = game;
       this.playerInventory = playerInventory;
       this.registry = registry;
@@ -99,16 +99,18 @@
         registry: this.registry,
         inventory: this.playerInventory
       });
-      this.craftInventory = new Inventory(3, 3);
-      this.craftInventory.on('changed', (function(_this) {
-        return function() {
-          return _this.updateCraftingRecipe();
-        };
-      })(this));
-      this.craftIW = new InventoryWindow({
-        width: 3,
+      this.burnInventory = new Inventory(1);
+      this.burnIW = new InventoryWindow({
+        width: 1,
         registry: this.registry,
-        inventory: this.craftInventory,
+        inventory: this.burnInventory,
+        linkedInventory: this.playerInventory
+      });
+      this.fuelInventory = new Inventory(1);
+      this.fuelIW = new InventoryWindow({
+        width: 1,
+        registry: this.registry,
+        inventory: this.fuelInventory,
         linkedInventory: this.playerInventory
       });
       this.resultInventory = new Inventory(1);
@@ -120,17 +122,19 @@
       });
       this.resultIW.on('pickup', (function(_this) {
         return function() {
-          return _this.tookCraftingOutput();
+          return _this.tookSmeltOutput();
         };
       })(this));
       crDiv = document.createElement('div');
       crDiv.style.marginLeft = '30%';
       crDiv.style.marginBottom = '10px';
-      craftCont = this.craftIW.createContainer();
+      burnCont = this.burnIW.createContainer();
+      fuelCont = this.fuelIW.createContainer();
       resultCont = this.resultIW.createContainer();
       resultCont.style.marginLeft = '30px';
       resultCont.style.marginTop = '15%';
-      crDiv.appendChild(craftCont);
+      crDiv.appendChild(burnCont);
+      crDiv.appendChild(fuelCont);
       crDiv.appendChild(resultCont);
       contents = [];
       contents.push(crDiv);
@@ -141,31 +145,11 @@
       });
     }
 
-    FurnaceDialog.prototype.updateCraftingRecipe = function() {
-      var recipe;
-      recipe = this.recipes.find(this.craftInventory);
-      console.log('found recipe', recipe);
-      return this.resultInventory.set(0, recipe != null ? recipe.computeOutput(this.craftInventory) : void 0);
-    };
+    FurnaceDialog.prototype.updateSmeltingRecipe = function() {};
 
-    FurnaceDialog.prototype.tookCraftingOutput = function() {
-      var recipe;
-      recipe = this.recipes.find(this.craftInventory);
-      if (recipe == null) {
-        return;
-      }
-      recipe.craft(this.craftInventory);
-      return this.craftInventory.changed();
-    };
+    FurnaceDialog.prototype.tookSmeltOutput = function() {};
 
     FurnaceDialog.prototype.close = function() {
-      var excess, i, _i, _ref;
-      for (i = _i = 0, _ref = this.craftInventory.size(); 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        if (this.craftInventory.get(i)) {
-          excess = this.playerInventory.give(this.craftInventory.get(i));
-        }
-        this.craftInventory.set(i, void 0);
-      }
       return FurnaceDialog.__super__.close.call(this);
     };
 
