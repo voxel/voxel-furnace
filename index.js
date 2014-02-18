@@ -142,7 +142,7 @@
       });
       this.resultIW.on('pickup', (function(_this) {
         return function() {
-          return _this.tookSmeltOutput();
+          return _this.updateSmelting();
         };
       })(this));
       crDiv = document.createElement('div');
@@ -177,12 +177,19 @@
       if (!this.isBurnable(this.burnInventory.get(0))) {
         return;
       }
-      if (this.resultInventory.get(0)) {
+      if (this.resultInventory.get(0) && this.resultInventory.get(0).item !== 'coal') {
         return;
       }
+      if (this.isSmelting) {
+        return;
+      }
+      this.isSmelting = true;
+      console.log("smelting: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
       fuel = this.fuelInventory.takeAt(0, 1);
       burn = this.burnInventory.takeAt(0, 1);
-      return this.resultInventory.give(new ItemPile('coal', 1));
+      this.resultInventory.give(new ItemPile('coal', 1));
+      console.log("smelted: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
+      return this.isSmelting = false;
     };
 
     FurnaceDialog.prototype.isFuel = function(itemPile) {
@@ -199,8 +206,6 @@
       }
       return (_ref = itemPile.item) === 'logBirch' || _ref === 'logOak';
     };
-
-    FurnaceDialog.prototype.tookSmeltOutput = function() {};
 
     FurnaceDialog.prototype.close = function() {
       return FurnaceDialog.__super__.close.call(this);
