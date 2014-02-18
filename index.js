@@ -67,7 +67,7 @@
     Furnace.prototype.enable = function() {
       if (this.opts.registerBlock) {
         this.registry.registerBlock('furnace', {
-          texture: ['crafting_table_top', 'planks_oak', 'crafting_table_side'],
+          texture: ['furnace_top', 'cobblestone', 'furnace_front_on'],
           onInteract: (function(_this) {
             return function() {
               _this.furnaceDialog.open();
@@ -77,7 +77,7 @@
         });
       }
       if (this.opts.registerRecipe) {
-        return this.recipes.registerAmorphous(['wood.plank', 'wood.plank', 'wood.plank', 'wood.plank'], new ItemPile('furnace', 1));
+        return this.recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], new ItemPile('furnace', 1));
       }
     };
 

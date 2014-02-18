@@ -29,19 +29,20 @@ class Furnace
 
   enable: () ->
     if @opts.registerBlock
-      @registry.registerBlock 'furnace', {texture: ['crafting_table_top', 'planks_oak', 'crafting_table_side'], onInteract: () =>
+      @registry.registerBlock 'furnace', {texture: ['furnace_top', 'cobblestone', 'furnace_front_on'], onInteract: () =>
         # TODO: server-side
         @furnaceDialog.open()
         true
       }
 
     if @opts.registerRecipe
-      @recipes.registerAmorphous(['wood.plank', 'wood.plank', 'wood.plank', 'wood.plank'], new ItemPile('furnace', 1))
+      @recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], new ItemPile('furnace', 1))
 
   disable: () ->
     # TODO
 
 
+# TODO: major refactor with voxel-workbench!
 class FurnaceDialog extends ModalDialog
   constructor: (@game, @playerInventory, @registry, @recipes) ->
     # TODO: refactor with voxel-inventory-dialog
