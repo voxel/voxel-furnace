@@ -12,9 +12,9 @@
   "dependencies": {
     "voxel-modal-dialog": "~0.1.2",
     "inventory": "~0.1.0",
-    "inventory-window": "~0.2.1"
+    "inventory-window": "~0.2.1",
+    "itempile": "~0.2.0"
   },
-  "peerDependencies": {
-  },
+  "peerDependencies": {},
   "license": "MIT"
 }
