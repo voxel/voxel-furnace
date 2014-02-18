@@ -126,13 +126,12 @@
         };
       })(this));
       crDiv = document.createElement('div');
-      crDiv.style.marginLeft = '30%';
-      crDiv.style.marginBottom = '10px';
+      crDiv.style.display = 'inline-flex';
+      crDiv.style.justifyContent = 'center';
+      crDiv.style.width = '100%';
       burnCont = this.burnIW.createContainer();
       fuelCont = this.fuelIW.createContainer();
       resultCont = this.resultIW.createContainer();
-      resultCont.style.marginLeft = '30px';
-      resultCont.style.marginTop = '15%';
       crDiv.appendChild(burnCont);
       crDiv.appendChild(fuelCont);
       crDiv.appendChild(resultCont);

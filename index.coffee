@@ -63,17 +63,13 @@ class FurnaceDialog extends ModalDialog
 
     # burn + fuel + result div, upper
     crDiv = document.createElement('div')
-    crDiv.style.marginLeft = '30%'
-    #crDiv.style.marginLeft = 'auto' # TODO: fix centering
-    #crDiv.style.marginRight = 'auto'
-    crDiv.style.marginBottom = '10px'
+    crDiv.style.display = 'inline-flex'
+    crDiv.style.justifyContent = 'center'
+    crDiv.style.width = '100%'
   
     burnCont = @burnIW.createContainer()
     fuelCont = @fuelIW.createContainer()
-
     resultCont = @resultIW.createContainer()
-    resultCont.style.marginLeft = '30px'
-    resultCont.style.marginTop = '15%'
 
     crDiv.appendChild(burnCont)
     crDiv.appendChild(fuelCont)
