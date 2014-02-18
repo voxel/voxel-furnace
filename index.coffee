@@ -1,4 +1,3 @@
-# vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab:
 
 ModalDialog = require 'voxel-modal-dialog'
 Inventory = require 'inventory'
@@ -6,44 +5,44 @@ InventoryWindow = require 'inventory-window'
 ItemPile = require 'itempile'
 
 module.exports = (game, opts) ->
-  return new Workbench(game, opts)
+  return new Furnace(game, opts)
 
 module.exports.pluginInfo =
   loadAfter: ['voxel-registry', 'voxel-recipes', 'voxel-carry']
 
-class Workbench
+class Furnace
   constructor: (@game, opts) ->
     opts ?= {}
 
-    @playerInventory = game.plugins?.get('voxel-carry')?.inventory ? opts.playerInventory ? throw new Error('voxel-workbench requires "voxel-carry" plugin or "playerInventory" set to inventory instance')
-    @registry = game.plugins?.get('voxel-registry') ? throw new Error('voxel-workbench requires "voxel-registry" plugin')
-    @recipes = game.plugins?.get('voxel-recipes') ? throw new Error('voxel-workbench requires "voxel-recipes" plugin')
+    @playerInventory = game.plugins?.get('voxel-carry')?.inventory ? opts.playerInventory ? throw new Error('voxel-furnace requires "voxel-carry" plugin or "playerInventory" set to inventory instance')
+    @registry = game.plugins?.get('voxel-registry') ? throw new Error('voxel-furnace requires "voxel-registry" plugin')
+    @recipes = game.plugins?.get('voxel-recipes') ? throw new Error('voxel-furnace requires "voxel-recipes" plugin')
 
     opts.registerBlock ?= true
     opts.registerRecipe ?= true
    
     if @game.isClient
-      @workbenchDialog = new WorkbenchDialog(game, @playerInventory, @registry, @recipes)
+      @furnaceDialog = new FurnaceDialog(game, @playerInventory, @registry, @recipes)
 
     @opts = opts
     @enable()
 
   enable: () ->
     if @opts.registerBlock
-      @registry.registerBlock 'workbench', {texture: ['crafting_table_top', 'planks_oak', 'crafting_table_side'], onInteract: () =>
+      @registry.registerBlock 'furnace', {texture: ['crafting_table_top', 'planks_oak', 'crafting_table_side'], onInteract: () =>
         # TODO: server-side
-        @workbenchDialog.open()
+        @furnaceDialog.open()
         true
       }
 
     if @opts.registerRecipe
-      @recipes.registerAmorphous(['wood.plank', 'wood.plank', 'wood.plank', 'wood.plank'], new ItemPile('workbench', 1))
+      @recipes.registerAmorphous(['wood.plank', 'wood.plank', 'wood.plank', 'wood.plank'], new ItemPile('furnace', 1))
 
   disable: () ->
     # TODO
 
 
-class WorkbenchDialog extends ModalDialog
+class FurnaceDialog extends ModalDialog
   constructor: (@game, @playerInventory, @registry, @recipes) ->
     # TODO: refactor with voxel-inventory-dialog
     @playerIW = new InventoryWindow {width: 10, registry:@registry, inventory:@playerInventory}
@@ -98,7 +97,7 @@ class WorkbenchDialog extends ModalDialog
     @craftInventory.changed()
 
   close: () ->
-    # exiting workbench returns in-progress crafting ingredients to player
+    # exiting furnace returns in-progress crafting ingredients to player
     # TODO: inventory transfer() method
     for i in [0...@craftInventory.size()]
       if @craftInventory.get(i)
