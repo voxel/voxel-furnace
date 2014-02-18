@@ -2,6 +2,7 @@
 ModalDialog = require 'voxel-modal-dialog'
 Inventory = require 'inventory'
 InventoryWindow = require 'inventory-window'
+ItemPile = require 'itempile'
 
 module.exports = (game, opts) ->
   return new Furnace(game, opts)
@@ -19,6 +20,7 @@ class Furnace
 
     opts.registerBlock ?= true
     opts.registerRecipe ?= true
+    opts.registerCoal ?= true
    
     if @game.isClient
       @furnaceDialog = new FurnaceDialog(game, @playerInventory, @registry, @recipes)
@@ -37,6 +39,9 @@ class Furnace
     if @opts.registerRecipe
       @recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace'])
 
+    if @opts.registerCoal
+      @registry.registerItem 'coal', {itemTexture: 'i/coal'}
+
   disable: () ->
     # TODO
 
@@ -50,11 +55,11 @@ class FurnaceDialog extends ModalDialog
     # TODO: clear these inventories on close, or store in per-block metadata
     
     @burnInventory = new Inventory(1)
-    #@burnInventory.on 'changed', () => @updateCraftingRecipe()
+    @burnInventory.on 'changed', () => @updateSmelting()
     @burnIW = new InventoryWindow {width:1, registry:@registry, inventory:@burnInventory, linkedInventory:@playerInventory}
 
     @fuelInventory = new Inventory(1)
-    #@fuelInventory.on 'changed', 
+    @fuelInventory.on 'changed', () => @updateSmelting()
     @fuelIW = new InventoryWindow {width:1, registry:@registry, inventory:@fuelInventory, linkedInventory:@playerInventory}
 
     @resultInventory = new Inventory(1)
@@ -104,11 +109,29 @@ class FurnaceDialog extends ModalDialog
 
   # TODO: refactor again from voxel-inventory-dialog's crafting
 
-  updateSmeltingRecipe: () ->
+  updateSmelting: () ->
+    return if not @isFuel(@fuelInventory.get(0))
+    return if not @isBurnable(@burnInventory.get(0))
+    return if @resultInventory.get(0) # empty TODO: stack
+
+    fuel = @fuelInventory.takeAt(0, 1)
+    burn = @burnInventory.takeAt(0, 1)
+
+    @resultInventory.give new ItemPile('coal', 1)
+    
+
     #recipe = @recipes.find(@craftInventory)
     #console.log 'found recipe',recipe
     #@resultInventory.set 0, recipe?.computeOutput(@craftInventory)
     # TODO
+
+  isFuel: (itemPile) ->
+    return false if not itemPile
+    return itemPile.item == 'stick' # TODO: registry
+
+  isBurnable: (itemPile) ->
+    return false if not itemPile
+    return itemPile.item in ['logBirch', 'logOak'] # TODO: registry
 
   # picked up smelting recipe output
   tookSmeltOutput: () ->
