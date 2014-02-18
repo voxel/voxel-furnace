@@ -1,0 +1,6 @@
+# voxel-furnace
+
+## License
+
+MIT
+
