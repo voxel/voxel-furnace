@@ -83,8 +83,8 @@
         this.recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace']);
       }
       if (this.opts.registerCoal) {
-        return this.registry.registerItem('coal', {
-          itemTexture: 'i/coal'
+        return this.registry.registerItem('charcoal', {
+          itemTexture: 'i/charcoal'
         });
       }
     };

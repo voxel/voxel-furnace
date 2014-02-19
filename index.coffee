@@ -40,7 +40,7 @@ class Furnace
       @recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace'])
 
     if @opts.registerCoal
-      @registry.registerItem 'coal', {itemTexture: 'i/coal'}
+      @registry.registerItem 'charcoal', {itemTexture: 'i/charcoal'}
 
   disable: () ->
     # TODO
