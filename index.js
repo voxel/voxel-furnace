@@ -99,7 +99,7 @@
     __extends(FurnaceDialog, _super);
 
     function FurnaceDialog(game, playerInventory, registry, recipes) {
-      var burnCont, contents, crDiv, fuelCont, resultCont;
+      var allDiv, bfDiv, burnCont, contents, fuelCont, resultCont;
       this.game = game;
       this.playerInventory = playerInventory;
       this.registry = registry;
@@ -145,23 +145,30 @@
           return _this.updateSmelting();
         };
       })(this));
-      crDiv = document.createElement('div');
-      crDiv.style.display = 'inline-flex';
-      crDiv.style.justifyContent = 'center';
-      crDiv.style.width = '100%';
+      allDiv = document.createElement('div');
+      allDiv.style.display = 'flex';
+      allDiv.style.justifyContent = 'center';
+      allDiv.style.width = '100%';
       burnCont = this.burnIW.createContainer();
       fuelCont = this.fuelIW.createContainer();
       resultCont = this.resultIW.createContainer();
       burnCont.style.display = 'flex';
       burnCont.style.flex = '1';
       fuelCont.style.display = 'flex';
-      fuelCont.style.flex = '1';
       resultCont.style.display = 'flex';
-      crDiv.appendChild(burnCont);
-      crDiv.appendChild(fuelCont);
-      crDiv.appendChild(resultCont);
+      resultCont.style.flexFlow = 'column';
+      resultCont.style.justifyContent = 'center';
+      bfDiv = document.createElement('div');
+      bfDiv.style.display = 'flex';
+      bfDiv.style.flexFlow = 'column';
+      bfDiv.style.paddingTop = '10px';
+      bfDiv.style.paddingRight = '50px';
+      bfDiv.appendChild(burnCont);
+      bfDiv.appendChild(fuelCont);
+      allDiv.appendChild(bfDiv);
+      allDiv.appendChild(resultCont);
       contents = [];
-      contents.push(crDiv);
+      contents.push(allDiv);
       contents.push(document.createElement('br'));
       contents.push(this.playerIW.createContainer());
       FurnaceDialog.__super__.constructor.call(this, game, {

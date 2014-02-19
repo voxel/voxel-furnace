@@ -66,41 +66,47 @@ class FurnaceDialog extends ModalDialog
     @resultIW = new InventoryWindow {inventory:@resultInventory, registry:@registry, allowDrop:false, linkedInventory:@playerInventory}
     @resultIW.on 'pickup', () => @updateSmelting()
 
-    # burn + fuel + result div, upper
-    crDiv = document.createElement('div')
-    crDiv.style.display = 'inline-flex'
-    crDiv.style.justifyContent = 'center'
-    crDiv.style.width = '100%'
-  
-    burnCont = @burnIW.createContainer()
-    fuelCont = @fuelIW.createContainer()
-    resultCont = @resultIW.createContainer()
-
     # align as follows:
-    # +---------------------------------+
-    # | [burn]      [fuel]      [result]|
-    # +---------------------------------+
-    #
-    # TODO: how about this instead:
     # +---------------------------------+
     # |     [burn]                      |
     # |             --->  [result]      |
     # |     [fuel]                      |
     # +---------------------------------+
+
+    allDiv = document.createElement('div')
+    allDiv.style.display = 'flex'
+    allDiv.style.justifyContent = 'center'
+    allDiv.style.width = '100%'
+  
+    burnCont = @burnIW.createContainer()
+    fuelCont = @fuelIW.createContainer()
+    resultCont = @resultIW.createContainer()
+
     burnCont.style.display = 'flex'
     burnCont.style.flex = '1'
 
     fuelCont.style.display = 'flex'
-    fuelCont.style.flex = '1'
 
     resultCont.style.display = 'flex'
+    resultCont.style.flexFlow = 'column'
+    resultCont.style.justifyContent = 'center'
 
-    crDiv.appendChild(burnCont)
-    crDiv.appendChild(fuelCont)
-    crDiv.appendChild(resultCont)
+    # burn and fuel div
+    bfDiv = document.createElement 'div'
+    bfDiv.style.display = 'flex'
+    bfDiv.style.flexFlow = 'column'
+    bfDiv.style.paddingTop = '10px'
+    bfDiv.style.paddingRight = '50px'  # give some space between result slot
+
+    bfDiv.appendChild(burnCont)
+    bfDiv.appendChild(fuelCont)
+
+
+    allDiv.appendChild(bfDiv)
+    allDiv.appendChild(resultCont)
 
     contents = []
-    contents.push crDiv
+    contents.push allDiv
     contents.push document.createElement('br') # TODO: better positioning
     # player inventory at bottom
     contents.push @playerIW.createContainer()
