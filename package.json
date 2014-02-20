@@ -10,7 +10,7 @@
     "voxel"
   ],
   "dependencies": {
-    "voxel-modal-dialog": "~0.1.2",
+    "voxel-inventory-dialog": "~0.3.1",
     "inventory": "~0.1.0",
     "inventory-window": "~0.2.1",
     "itempile": "~0.2.0"

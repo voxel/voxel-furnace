@@ -1,5 +1,5 @@
 
-ModalDialog = require 'voxel-modal-dialog'
+InventoryDialog = (require 'voxel-inventory-dialog').InventoryDialog
 Inventory = require 'inventory'
 InventoryWindow = require 'inventory-window'
 ItemPile = require 'itempile'
@@ -46,12 +46,8 @@ class Furnace
     # TODO
 
 
-# TODO: major refactor with voxel-workbench!
-class FurnaceDialog extends ModalDialog
+class FurnaceDialog extends InventoryDialog
   constructor: (@game, @playerInventory, @registry, @recipes) ->
-    # TODO: refactor with voxel-inventory-dialog
-    @playerIW = new InventoryWindow {width: 10, registry:@registry, inventory:@playerInventory}
-
     # TODO: clear these inventories on close, or store in per-block metadata
     
     @burnInventory = new Inventory(1)
@@ -73,6 +69,7 @@ class FurnaceDialog extends ModalDialog
     # |     [fuel]                      |
     # +---------------------------------+
 
+    # TODO: fix float:right in voxel-inventory-dialog; would prefer it centered (remove float, but make sure not to break voxel-inventory-crafting)
     allDiv = document.createElement('div')
     allDiv.style.display = 'flex'
     allDiv.style.justifyContent = 'center'
@@ -105,15 +102,8 @@ class FurnaceDialog extends ModalDialog
     allDiv.appendChild(bfDiv)
     allDiv.appendChild(resultCont)
 
-    contents = []
-    contents.push allDiv
-    contents.push document.createElement('br') # TODO: better positioning
-    # player inventory at bottom
-    contents.push @playerIW.createContainer()
-
-    super game, {contents: contents}
-
-  # TODO: refactor again from voxel-inventory-dialog's crafting
+    super game,
+      upper: [allDiv]
 
   updateSmelting: () ->
     return if @isSmelting # prevent recursion
