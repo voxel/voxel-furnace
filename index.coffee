@@ -37,7 +37,10 @@ class Furnace
       }
 
     if @opts.registerRecipe
-      @recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace'])
+      @recipes.registerPositional([
+        ['cobblestone', 'cobblestone', 'cobblestone']
+        ['cobblestone', undefined, 'cobblestone']
+        ['cobblestone', 'cobblestone', 'cobblestone']], ['furnace'])
 
     if @opts.registerItems
       @registry.registerItem 'ingotIron', {itemTexture: 'i/iron_ingot'}

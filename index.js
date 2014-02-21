@@ -80,7 +80,7 @@
         });
       }
       if (this.opts.registerRecipe) {
-        this.recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace']);
+        this.recipes.registerPositional([['cobblestone', 'cobblestone', 'cobblestone'], ['cobblestone', void 0, 'cobblestone'], ['cobblestone', 'cobblestone', 'cobblestone']], ['furnace']);
       }
       if (this.opts.registerItems) {
         return this.registry.registerItem('ingotIron', {
