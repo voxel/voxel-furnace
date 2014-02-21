@@ -163,6 +163,7 @@
       allDiv.appendChild(bfDiv);
       allDiv.appendChild(resultCont);
       FurnaceDialog.__super__.constructor.call(this, game, {
+        playerLinkedInventory: this.burnInventory,
         upper: [allDiv]
       });
     }

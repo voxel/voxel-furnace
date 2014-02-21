@@ -103,6 +103,7 @@ class FurnaceDialog extends InventoryDialog
     allDiv.appendChild(resultCont)
 
     super game,
+      playerLinkedInventory: @burnInventory # TODO: allow selectively linking to burn or fuel inv, depending on item type!
       upper: [allDiv]
 
   updateSmelting: () ->
