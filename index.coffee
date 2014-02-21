@@ -41,7 +41,6 @@ class Furnace
 
     if @opts.registerItems
       @registry.registerItem 'ingotIron', {itemTexture: 'i/iron_ingot'}
-      @registry.registerItem 'charcoal', {itemTexture: 'i/charcoal'}
 
   disable: () ->
     # TODO
@@ -132,7 +131,7 @@ class FurnaceDialog extends InventoryDialog
 
   isFuel: (itemPile) ->
     return false if not itemPile
-    return itemPile.item == 'stick' # TODO: registry
+    return itemPile.item == 'coal' # TODO: registry
 
   # TODO: move to voxel-recipes?
   lookupSmelted: (input) ->

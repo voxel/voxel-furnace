@@ -83,11 +83,8 @@
         this.recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace']);
       }
       if (this.opts.registerItems) {
-        this.registry.registerItem('ingotIron', {
+        return this.registry.registerItem('ingotIron', {
           itemTexture: 'i/iron_ingot'
-        });
-        return this.registry.registerItem('charcoal', {
-          itemTexture: 'i/charcoal'
         });
       }
     };
@@ -201,7 +198,7 @@
       if (!itemPile) {
         return false;
       }
-      return itemPile.item === 'stick';
+      return itemPile.item === 'coal';
     };
 
     FurnaceDialog.prototype.lookupSmelted = function(input) {
