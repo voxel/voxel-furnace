@@ -57,8 +57,8 @@
       if (opts.registerRecipe == null) {
         opts.registerRecipe = true;
       }
-      if (opts.registerCoal == null) {
-        opts.registerCoal = true;
+      if (opts.registerItems == null) {
+        opts.registerItems = true;
       }
       if (this.game.isClient) {
         this.furnaceDialog = new FurnaceDialog(game, this.playerInventory, this.registry, this.recipes);
@@ -82,7 +82,10 @@
       if (this.opts.registerRecipe) {
         this.recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace']);
       }
-      if (this.opts.registerCoal) {
+      if (this.opts.registerItems) {
+        this.registry.registerItem('ingotIron', {
+          itemTexture: 'i/iron_ingot'
+        });
         return this.registry.registerItem('charcoal', {
           itemTexture: 'i/charcoal'
         });
@@ -169,7 +172,7 @@
     }
 
     FurnaceDialog.prototype.updateSmelting = function() {
-      var burn, fuel;
+      var burn, fuel, smeltedOutput;
       if (this.isSmelting) {
         return;
       }
@@ -178,16 +181,17 @@
         if (!this.isFuel(this.fuelInventory.get(0))) {
           break;
         }
-        if (!this.isBurnable(this.burnInventory.get(0))) {
+        smeltedOutput = this.lookupSmelted(this.burnInventory.get(0));
+        if (smeltedOutput == null) {
           break;
         }
-        if (this.resultInventory.get(0) && (this.resultInventory.get(0).item !== 'coal' || this.resultInventory.get(0).count === 64)) {
+        if (this.resultInventory.get(0) && (this.resultInventory.get(0).item !== smeltedOutput.item || this.resultInventory.get(0).count === 64)) {
           break;
         }
         console.log("smelting: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
         fuel = this.fuelInventory.takeAt(0, 1);
         burn = this.burnInventory.takeAt(0, 1);
-        this.resultInventory.give(new ItemPile('coal', 1));
+        this.resultInventory.give(smeltedOutput);
         console.log("smelted: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
       }
       return this.isSmelting = false;
@@ -200,12 +204,14 @@
       return itemPile.item === 'stick';
     };
 
-    FurnaceDialog.prototype.isBurnable = function(itemPile) {
-      var _ref;
-      if (!itemPile) {
-        return false;
+    FurnaceDialog.prototype.lookupSmelted = function(input) {
+      if (input == null) {
+        return void 0;
       }
-      return (_ref = itemPile.item) === 'logBirch' || _ref === 'logOak';
+      return {
+        oreIron: new ItemPile('ingotIron'),
+        oreCoal: new ItemPile('coal')
+      }[input.item];
     };
 
     FurnaceDialog.prototype.close = function() {

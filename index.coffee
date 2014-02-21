@@ -20,8 +20,8 @@ class Furnace
 
     opts.registerBlock ?= true
     opts.registerRecipe ?= true
-    opts.registerCoal ?= true
-   
+    opts.registerItems ?= true
+
     if @game.isClient
       @furnaceDialog = new FurnaceDialog(game, @playerInventory, @registry, @recipes)
 
@@ -39,7 +39,8 @@ class Furnace
     if @opts.registerRecipe
       @recipes.registerAmorphous(['cobblestone', 'cobblestone', 'cobblestone', 'cobblestone'], ['furnace'])
 
-    if @opts.registerCoal
+    if @opts.registerItems
+      @registry.registerItem 'ingotIron', {itemTexture: 'i/iron_ingot'}
       @registry.registerItem 'charcoal', {itemTexture: 'i/charcoal'}
 
   disable: () ->
@@ -111,16 +112,19 @@ class FurnaceDialog extends InventoryDialog
     @isSmelting = true
 
     while true
-      break if not @isFuel(@fuelInventory.get(0))
-      break if not @isBurnable(@burnInventory.get(0))
-      break if @resultInventory.get(0) && (@resultInventory.get(0).item != 'coal' || @resultInventory.get(0).count == 64) # not empty or stackable or no space
+      break if not @isFuel @fuelInventory.get(0)
+
+      smeltedOutput = @lookupSmelted @burnInventory.get(0)
+      break if not smeltedOutput?  # not smeltable
+
+      break if @resultInventory.get(0) && (@resultInventory.get(0).item != smeltedOutput.item || @resultInventory.get(0).count == 64) # not empty or stackable or no space
 
       console.log "smelting: #{@fuelInventory} + #{@burnInventory} = #{@resultInventory}"
 
       fuel = @fuelInventory.takeAt(0, 1)
       burn = @burnInventory.takeAt(0, 1) # TODO: custom burn amounts TODO: finite burn times
 
-      @resultInventory.give new ItemPile('coal', 1) # TODO: registry
+      @resultInventory.give smeltedOutput
       
       console.log "smelted: #{@fuelInventory} + #{@burnInventory} = #{@resultInventory}"
 
@@ -130,9 +134,15 @@ class FurnaceDialog extends InventoryDialog
     return false if not itemPile
     return itemPile.item == 'stick' # TODO: registry
 
-  isBurnable: (itemPile) ->
-    return false if not itemPile
-    return itemPile.item in ['logBirch', 'logOak'] # TODO: registry
+  # TODO: move to voxel-recipes?
+  lookupSmelted: (input) ->
+    return undefined if not input?
+
+    return {
+      oreIron: new ItemPile('ingotIron'),
+      oreCoal: new ItemPile('coal')
+    }[input.item]
+
 
   close: () ->
     super()
