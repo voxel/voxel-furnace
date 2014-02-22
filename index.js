@@ -51,6 +51,9 @@
           throw new Error('voxel-furnace requires "voxel-recipes" plugin');
         }
       })();
+      if (this.recipes.registerSmelting == null) {
+        throw new Error('voxel-furnace requires voxel-recipes with smelting recipes');
+      }
       if (opts.registerBlock == null) {
         opts.registerBlock = true;
       }
@@ -59,6 +62,9 @@
       }
       if (opts.registerItems == null) {
         opts.registerItems = true;
+      }
+      if (opts.registerRecipes == null) {
+        opts.registerRecipes = true;
       }
       if (this.game.isClient) {
         this.furnaceDialog = new FurnaceDialog(game, this.playerInventory, this.registry, this.recipes);
@@ -83,9 +89,13 @@
         this.recipes.registerPositional([['cobblestone', 'cobblestone', 'cobblestone'], ['cobblestone', void 0, 'cobblestone'], ['cobblestone', 'cobblestone', 'cobblestone']], ['furnace']);
       }
       if (this.opts.registerItems) {
-        return this.registry.registerItem('ingotIron', {
+        this.registry.registerItem('ingotIron', {
           itemTexture: 'i/iron_ingot'
         });
+      }
+      if (this.opts.registerRecipes) {
+        this.recipes.registerSmelting('oreIron', new ItemPile('ingotIron'));
+        return this.recipes.registerSmelting('oreCoal', new ItemPile('coal'));
       }
     };
 
@@ -178,7 +188,7 @@
         if (!this.isFuel(this.fuelInventory.get(0))) {
           break;
         }
-        smeltedOutput = this.lookupSmelted(this.burnInventory.get(0));
+        smeltedOutput = this.recipes.smelt(this.burnInventory.get(0));
         if (smeltedOutput == null) {
           break;
         }
@@ -199,16 +209,6 @@
         return false;
       }
       return itemPile.item === 'coal';
-    };
-
-    FurnaceDialog.prototype.lookupSmelted = function(input) {
-      if (input == null) {
-        return void 0;
-      }
-      return {
-        oreIron: new ItemPile('ingotIron'),
-        oreCoal: new ItemPile('coal')
-      }[input.item];
     };
 
     FurnaceDialog.prototype.close = function() {

@@ -17,10 +17,12 @@ class Furnace
     @playerInventory = game.plugins?.get('voxel-carry')?.inventory ? opts.playerInventory ? throw new Error('voxel-furnace requires "voxel-carry" plugin or "playerInventory" set to inventory instance')
     @registry = game.plugins?.get('voxel-registry') ? throw new Error('voxel-furnace requires "voxel-registry" plugin')
     @recipes = game.plugins?.get('voxel-recipes') ? throw new Error('voxel-furnace requires "voxel-recipes" plugin')
+    throw new Error('voxel-furnace requires voxel-recipes with smelting recipes') if not @recipes.registerSmelting?
 
     opts.registerBlock ?= true
     opts.registerRecipe ?= true
     opts.registerItems ?= true
+    opts.registerRecipes ?= true
 
     if @game.isClient
       @furnaceDialog = new FurnaceDialog(game, @playerInventory, @registry, @recipes)
@@ -44,6 +46,10 @@ class Furnace
 
     if @opts.registerItems
       @registry.registerItem 'ingotIron', {itemTexture: 'i/iron_ingot'}
+
+    if @opts.registerRecipes
+      @recipes.registerSmelting 'oreIron', new ItemPile('ingotIron') # TODO: move to voxel-land?
+      @recipes.registerSmelting 'oreCoal', new ItemPile('coal')
 
   disable: () ->
     # TODO
@@ -116,7 +122,7 @@ class FurnaceDialog extends InventoryDialog
     while true
       break if not @isFuel @fuelInventory.get(0)
 
-      smeltedOutput = @lookupSmelted @burnInventory.get(0)
+      smeltedOutput = @recipes.smelt @burnInventory.get(0)
       break if not smeltedOutput?  # not smeltable
 
       break if @resultInventory.get(0) && (@resultInventory.get(0).item != smeltedOutput.item || @resultInventory.get(0).count == 64) # not empty or stackable or no space
@@ -135,15 +141,6 @@ class FurnaceDialog extends InventoryDialog
   isFuel: (itemPile) ->
     return false if not itemPile
     return itemPile.item == 'coal' # TODO: registry
-
-  # TODO: move to voxel-recipes?
-  lookupSmelted: (input) ->
-    return undefined if not input?
-
-    return {
-      oreIron: new ItemPile('ingotIron'),
-      oreCoal: new ItemPile('coal')
-    }[input.item]
 
 
   close: () ->
