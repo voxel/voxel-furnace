@@ -141,8 +141,13 @@ class FurnaceDialog extends InventoryDialog
 
   isFuel: (itemPile) ->
     return false if not itemPile
-    return itemPile.item == 'coal' # TODO: registry
+    props = @registry.getItemProps itemPile.item
+    return false if not props
 
+    fuelBurnTime = props.fuelBurnTime
+    return false if not fuelBurnTime
+
+    return true # TODO: return burn time instead, and use variable length smelting times (GH-4)
 
   close: () ->
     super()

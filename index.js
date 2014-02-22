@@ -206,10 +206,19 @@
     };
 
     FurnaceDialog.prototype.isFuel = function(itemPile) {
+      var fuelBurnTime, props;
       if (!itemPile) {
         return false;
       }
-      return itemPile.item === 'coal';
+      props = this.registry.getItemProps(itemPile.item);
+      if (!props) {
+        return false;
+      }
+      fuelBurnTime = props.fuelBurnTime;
+      if (!fuelBurnTime) {
+        return false;
+      }
+      return true;
     };
 
     FurnaceDialog.prototype.close = function() {
