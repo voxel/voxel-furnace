@@ -95,7 +95,8 @@
       }
       if (this.opts.registerRecipes) {
         this.recipes.registerSmelting('oreIron', new ItemPile('ingotIron'));
-        return this.recipes.registerSmelting('oreCoal', new ItemPile('coal'));
+        this.recipes.registerSmelting('oreCoal', new ItemPile('coal'));
+        return this.recipes.registerSmelting('cobblestone', new ItemPile('stone'));
       }
     };
 

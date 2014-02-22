@@ -50,6 +50,7 @@ class Furnace
     if @opts.registerRecipes
       @recipes.registerSmelting 'oreIron', new ItemPile('ingotIron') # TODO: move to voxel-land?
       @recipes.registerSmelting 'oreCoal', new ItemPile('coal')
+      @recipes.registerSmelting 'cobblestone', new ItemPile('stone')
 
   disable: () ->
     # TODO
