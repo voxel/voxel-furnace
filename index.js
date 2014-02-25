@@ -17,12 +17,12 @@
   };
 
   module.exports.pluginInfo = {
-    loadAfter: ['voxel-registry', 'voxel-recipes', 'voxel-carry']
+    loadAfter: ['voxel-registry', 'voxel-recipes', 'voxel-carry', 'voxel-blockdata']
   };
 
   Furnace = (function() {
     function Furnace(game, opts) {
-      var _ref, _ref1, _ref2;
+      var _ref, _ref1, _ref2, _ref3;
       this.game = game;
       if (opts == null) {
         opts = {};
@@ -54,6 +54,14 @@
       if (this.recipes.registerSmelting == null) {
         throw new Error('voxel-furnace requires voxel-recipes with smelting recipes');
       }
+      this.blockdata = (function() {
+        var _ref4;
+        if ((_ref3 = (_ref4 = game.plugins) != null ? _ref4.get('voxel-blockdata') : void 0) != null) {
+          return _ref3;
+        } else {
+          throw new Error('voxel-furnace requires "voxel-blockdata plugin');
+        }
+      })();
       if (opts.registerBlock == null) {
         opts.registerBlock = true;
       }
@@ -67,7 +75,7 @@
         opts.registerRecipes = true;
       }
       if (this.game.isClient) {
-        this.furnaceDialog = new FurnaceDialog(game, this.playerInventory, this.registry, this.recipes);
+        this.furnaceDialog = new FurnaceDialog(game, this.playerInventory, this.registry, this.recipes, this.blockdata);
       }
       this.opts = opts;
       this.enable();
@@ -78,8 +86,8 @@
         this.registry.registerBlock('furnace', {
           texture: ['furnace_top', 'cobblestone', 'furnace_front_on'],
           onInteract: (function(_this) {
-            return function() {
-              _this.furnaceDialog.open();
+            return function(target) {
+              _this.furnaceDialog.open(target);
               return true;
             };
           })(this)
@@ -109,12 +117,13 @@
   FurnaceDialog = (function(_super) {
     __extends(FurnaceDialog, _super);
 
-    function FurnaceDialog(game, playerInventory, registry, recipes) {
+    function FurnaceDialog(game, playerInventory, registry, recipes, blockdata) {
       var allDiv, bfDiv, burnCont, fuelCont, resultCont;
       this.game = game;
       this.playerInventory = playerInventory;
       this.registry = registry;
       this.recipes = recipes;
+      this.blockdata = blockdata;
       this.burnInventory = new Inventory(1);
       this.burnInventory.on('changed', (function(_this) {
         return function() {
@@ -202,7 +211,8 @@
         this.resultInventory.give(smeltedOutput);
         console.log("smelted: " + this.fuelInventory + " + " + this.burnInventory + " = " + this.resultInventory);
       }
-      return this.isSmelting = false;
+      this.isSmelting = false;
+      return this.updateBlockdata();
     };
 
     FurnaceDialog.prototype.isFuel = function(itemPile) {
@@ -221,7 +231,49 @@
       return true;
     };
 
+    FurnaceDialog.prototype.loadBlockdata = function(x, y, z) {
+      var bd, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      bd = this.blockdata.get(x, y, z);
+      if (bd != null) {
+        this.burnInventory.set(0, ItemPile.fromString((_ref = bd.burn) != null ? _ref : ''));
+        this.fuelInventory.set(0, ItemPile.fromString((_ref1 = bd.fuel) != null ? _ref1 : ''));
+        this.resultInventory.set(0, ItemPile.fromString((_ref2 = bd.result) != null ? _ref2 : ''));
+      } else {
+        bd = {
+          burn: (_ref3 = this.burnInventory.get(0)) != null ? _ref3.toString() : void 0,
+          fuel: (_ref4 = this.fuelInventory.get(0)) != null ? _ref4.toString() : void 0,
+          result: (_ref5 = this.resultInventory.get(0)) != null ? _ref5.toString() : void 0
+        };
+        this.blockdata.set(x, y, z, bd);
+      }
+      this.activeBlockdata = bd;
+      return console.log('load bd', x, y, z, JSON.stringify(this.activeBlockdata));
+    };
+
+    FurnaceDialog.prototype.updateBlockdata = function() {
+      var _ref, _ref1, _ref2;
+      console.log("burn=" + this.burnInventory + ", fuel=" + this.fuelInventory + ", result=" + this.resultInventory);
+      if (this.activeBlockdata == null) {
+        return;
+      }
+      this.activeBlockdata.burn = (_ref = this.burnInventory.get(0)) != null ? _ref.toString() : void 0;
+      this.activeBlockdata.fuel = (_ref1 = this.fuelInventory.get(0)) != null ? _ref1.toString() : void 0;
+      this.activeBlockdata.result = (_ref2 = this.resultInventory.get(0)) != null ? _ref2.toString() : void 0;
+      return console.log('update bd', JSON.stringify(this.activeBlockdata));
+    };
+
+    FurnaceDialog.prototype.open = function(target) {
+      var x, y, z, _ref;
+      _ref = target.voxel, x = _ref[0], y = _ref[1], z = _ref[2];
+      this.loadBlockdata(x, y, z);
+      return FurnaceDialog.__super__.open.call(this);
+    };
+
     FurnaceDialog.prototype.close = function() {
+      delete this.activeBlockdata;
+      this.burnInventory.clear();
+      this.fuelInventory.clear();
+      this.resultInventory.clear();
       return FurnaceDialog.__super__.close.call(this);
     };
 

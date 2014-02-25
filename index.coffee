@@ -8,7 +8,7 @@ module.exports = (game, opts) ->
   return new Furnace(game, opts)
 
 module.exports.pluginInfo =
-  loadAfter: ['voxel-registry', 'voxel-recipes', 'voxel-carry']
+  loadAfter: ['voxel-registry', 'voxel-recipes', 'voxel-carry', 'voxel-blockdata']
 
 class Furnace
   constructor: (@game, opts) ->
@@ -18,6 +18,7 @@ class Furnace
     @registry = game.plugins?.get('voxel-registry') ? throw new Error('voxel-furnace requires "voxel-registry" plugin')
     @recipes = game.plugins?.get('voxel-recipes') ? throw new Error('voxel-furnace requires "voxel-recipes" plugin')
     throw new Error('voxel-furnace requires voxel-recipes with smelting recipes') if not @recipes.registerSmelting?
+    @blockdata = game.plugins?.get('voxel-blockdata') ? throw new Error('voxel-furnace requires "voxel-blockdata plugin')
 
     opts.registerBlock ?= true
     opts.registerRecipe ?= true
@@ -25,16 +26,16 @@ class Furnace
     opts.registerRecipes ?= true
 
     if @game.isClient
-      @furnaceDialog = new FurnaceDialog(game, @playerInventory, @registry, @recipes)
+      @furnaceDialog = new FurnaceDialog(game, @playerInventory, @registry, @recipes, @blockdata)
 
     @opts = opts
     @enable()
 
   enable: () ->
     if @opts.registerBlock
-      @registry.registerBlock 'furnace', {texture: ['furnace_top', 'cobblestone', 'furnace_front_on'], onInteract: () =>
+      @registry.registerBlock 'furnace', {texture: ['furnace_top', 'cobblestone', 'furnace_front_on'], onInteract: (target) =>
         # TODO: server-side
-        @furnaceDialog.open()
+        @furnaceDialog.open(target)
         true
       }
 
@@ -57,7 +58,7 @@ class Furnace
 
 
 class FurnaceDialog extends InventoryDialog
-  constructor: (@game, @playerInventory, @registry, @recipes) ->
+  constructor: (@game, @playerInventory, @registry, @recipes, @blockdata) ->
     # TODO: clear these inventories on close, or store in per-block metadata
     
     @burnInventory = new Inventory(1)
@@ -138,6 +139,7 @@ class FurnaceDialog extends InventoryDialog
       console.log "smelted: #{@fuelInventory} + #{@burnInventory} = #{@resultInventory}"
 
     @isSmelting = false
+    @updateBlockdata()
 
   isFuel: (itemPile) ->
     return false if not itemPile
@@ -149,7 +151,41 @@ class FurnaceDialog extends InventoryDialog
 
     return true # TODO: return burn time instead, and use variable length smelting times (GH-4)
 
+  # persistence
+  # TODO: refactor with voxel-chest and cleanup
+  loadBlockdata: (x, y, z) ->
+    bd = @blockdata.get x, y, z
+    if bd?
+      @burnInventory.set 0, ItemPile.fromString(bd.burn ? '')
+      @fuelInventory.set 0, ItemPile.fromString(bd.fuel ? '')
+      @resultInventory.set 0, ItemPile.fromString(bd.result ? '')
+    else
+      bd = {burn:@burnInventory.get(0)?.toString(), fuel:@fuelInventory.get(0)?.toString(), result:@resultInventory.get(0)?.toString()}
+      @blockdata.set x, y, z, bd
+
+    @activeBlockdata = bd
+    console.log('load bd',x,y,z,JSON.stringify(@activeBlockdata))
+
+  updateBlockdata: () ->
+    console.log "burn=#{@burnInventory}, fuel=#{@fuelInventory}, result=#{@resultInventory}"
+
+    return if not @activeBlockdata?
+    @activeBlockdata.burn = @burnInventory.get(0)?.toString()
+    @activeBlockdata.fuel = @fuelInventory.get(0)?.toString()
+    @activeBlockdata.result = @resultInventory.get(0)?.toString()
+    console.log('update bd',JSON.stringify(@activeBlockdata))
+
+  open: (target) ->
+    [x, y, z] = target.voxel
+    @loadBlockdata x, y, z
+
+    super()
+
   close: () ->
+    delete @activeBlockdata
+    @burnInventory.clear()
+    @fuelInventory.clear()
+    @resultInventory.clear()
     super()
 
 
