@@ -13,7 +13,7 @@
     "voxel-inventory-dialog": "~0.4.0",
     "inventory": "~0.1.0",
     "inventory-window": "~0.2.1",
-    "itempile": "~0.2.0"
+    "itempile": "~0.2.1"
   },
   "peerDependencies": {},
   "license": "MIT"
