@@ -98,7 +98,8 @@
       }
       if (this.opts.registerItems) {
         this.registry.registerItem('ingotIron', {
-          itemTexture: 'i/iron_ingot'
+          itemTexture: 'i/iron_ingot',
+          displayName: 'Iron Ingot'
         });
       }
       if (this.opts.registerRecipes) {

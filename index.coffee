@@ -46,7 +46,7 @@ class Furnace
         ['cobblestone', 'cobblestone', 'cobblestone']], ['furnace'])
 
     if @opts.registerItems
-      @registry.registerItem 'ingotIron', {itemTexture: 'i/iron_ingot'}
+      @registry.registerItem 'ingotIron', {itemTexture: 'i/iron_ingot', displayName: 'Iron Ingot'}
 
     if @opts.registerRecipes
       @recipes.registerSmelting 'oreIron', new ItemPile('ingotIron') # TODO: move to voxel-land?
