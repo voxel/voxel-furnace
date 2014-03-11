@@ -47,11 +47,17 @@ class Furnace
 
     if @opts.registerItems
       @registry.registerItem 'ingotIron', {itemTexture: 'i/iron_ingot', displayName: 'Iron Ingot'}
+      @registry.registerItem 'nugget', {itemTexture: 'i/gold_nugget', displayName: 'Nugget'} # TODO: iron_nugget, mod texture
 
     if @opts.registerRecipes
       @recipes.registerSmelting 'oreIron', new ItemPile('ingotIron') # TODO: move to voxel-land?
       @recipes.registerSmelting 'oreCoal', new ItemPile('coal')
       @recipes.registerSmelting 'cobblestone', new ItemPile('stone')
+      @recipes.registerAmorphous ['ingotIron'], new ItemPile('nugget', 9)
+      @recipes.registerPositional [
+          ['nugget', 'nugget', 'nugget'],
+          ['nugget', 'nugget', 'nugget'],
+          ['nugget', 'nugget', 'nugget']], new ItemPile('ingotIron')
 
   disable: () ->
     # TODO

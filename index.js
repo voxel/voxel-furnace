@@ -101,11 +101,17 @@
           itemTexture: 'i/iron_ingot',
           displayName: 'Iron Ingot'
         });
+        this.registry.registerItem('nugget', {
+          itemTexture: 'i/gold_nugget',
+          displayName: 'Nugget'
+        });
       }
       if (this.opts.registerRecipes) {
         this.recipes.registerSmelting('oreIron', new ItemPile('ingotIron'));
         this.recipes.registerSmelting('oreCoal', new ItemPile('coal'));
-        return this.recipes.registerSmelting('cobblestone', new ItemPile('stone'));
+        this.recipes.registerSmelting('cobblestone', new ItemPile('stone'));
+        this.recipes.registerAmorphous(['ingotIron'], new ItemPile('nugget', 9));
+        return this.recipes.registerPositional([['nugget', 'nugget', 'nugget'], ['nugget', 'nugget', 'nugget'], ['nugget', 'nugget', 'nugget']], new ItemPile('ingotIron'));
       }
     };
 
