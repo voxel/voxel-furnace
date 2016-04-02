@@ -2,7 +2,7 @@
   "name": "voxel-furnace",
   "description": "furnace for smelting (voxel.js plugin)",
   "version": "0.1.2",
-  "main": "furnace.coffee",
+  "main": "furnace.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:deathcap/voxel-furnace.git"
